@@ -5,7 +5,11 @@ public class CurrentAccount extends BankAccount{
 
     public CurrentAccount(String name, double balance, String tradeLicenseId) throws Exception {
         // minimum balance is 5000 by default. If balance is less than 5000, throw "Insufficient Balance" exception
+        super(name,balance,5000);
 
+        this.tradeLicenseId = tradeLicenseId;
+        if (balance < 5000)
+            throw new Exception("Insufficient Balance");
     }
 
     public void validateLicenseId() throws Exception {
@@ -14,6 +18,42 @@ public class CurrentAccount extends BankAccount{
         // If the characters of the license Id can be rearranged to create any valid license Id
         // If it is not possible, throw "Valid License can not be generated" Exception
 
+        if (tradeLicenseId == null || tradeLicenseId.length() < 2){
+            throw new Exception("Valid License can not be generated");
+        }
+
+        char[] chars = tradeLicenseId.toCharArray();
+        for (int i = 1; i < chars.length; i++) {
+
+            if (chars[i] == chars[i - 1])
+                rearrange(chars, i);
+        }
+
+        String validLicenseId = new String(chars);
+        if (!isValid(validLicenseId)){
+            throw new Exception("Valid License can not be generated");
+        }
     }
 
+    public static void rearrange(char[] chars, int index){
+        char c = chars[index];
+
+        if (index < chars.length - 1){
+            chars[index] = chars[index + 1];
+            chars[index + 1] = c;
+        }
+        else {
+            chars[index] = chars[index - 1];
+            chars[index - 1] = c;
+        }
+    }
+
+    public static boolean isValid(String licenseId){
+        for (int i = 0; i < licenseId.length(); i++){
+            if (licenseId.charAt(i) == licenseId.charAt(i - 1)){
+                return true;
+            }
+        }
+        return false;
+    }
 }
